@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+{% block content %}
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container">
+        <a class="navbar-brand" href="{{ url_for('index') }}">
+            <i class="bi bi-book"></i> Plan N Plan
+        </a>
+        
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('index') }}">Beranda</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('search') }}">Cari Resep</a>
+                </li>
+            </ul>
+            
+            <ul class="navbar-nav">
+                {% if session.user_id %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-person-circle"></i> {{ session.username }}
+                        </a>
+                        <ul class="dropdown-menu">
+                            {% if session.user_type == 'creator' %}
+                                <li><a class="dropdown-item" href="{{ url_for('creator_dashboard') }}">Dashboard</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('create_recipe') }}">Buat Resep</a></li>
+                            {% else %}
+                                <li><a class="dropdown-item" href="{{ url_for('user_dashboard') }}">Dashboard</a></li>
+                            {% endif %}
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{{ url_for('logout') }}">Logout</a></li>
+                        </ul>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('login') }}">Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('register') }}">Daftar</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- USER_DASHBOARD.HTML -->
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-3 sidebar p-4">
+            <div class="text-center mb-4">
+                <div class="profile-upload"> 
+                </div>
+                <h5>{{ session.username }}</h5>
+                <span class="badge bg-info">{{ session.user_type.title() }}</span>
+                
+            </div>
+
+            <div class="text-end">
+                <a href="{{ url_for('logout') }}" class="btn btn-outline-danger btn-sm">
+                    <i class="bi bi-box-arrow-right"></i> Logout
+                </a>
+            </div>
+            
+            
+            <div class="list-group">
+                <a href="{{ url_for('user_dashboard') }}" class="list-group-item list-group-item-action active">
+                    <i class="bi bi-house"></i> Dashboard
+                </a>
+                <a href="{{ url_for('search') }}" class="list-group-item list-group-item-action">
+                    <i class="bi bi-search"></i> Cari Resep
+                </a>
+                <a href="{{ url_for('favorites') }}" class="list-group-item list-group-item-action">
+                    <i class="bi bi-heart-fill"></i> Resep Favorit
+                </a>
+
+            </div>
+        </div>
+
+        <div class="col-md-9 p-4">
+            <h2 class="mb-4">Dashboard Pengguna</h2>
+            
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="card bg-primary text-white">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h4>{{ recipes|length }}</h4>
+                                    <p class="mb-0">Total Resep</p>
+                                </div>
+                                <i class="bi bi-journal-text" style="font-size: 2rem;"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Semua Resep</h5>
+                </div>
+                <div class="card-body">
+                    {% if recipes %}
+                        <div class="row">
+                            {% for recipe in recipes %}
+                                <div class="col-md-4 mb-3">
+                                    <div class="card recipe-card">
+                                        {% if recipe[8] %}
+                                            <img src="{{ url_for('static', filename='uploads/' + recipe[8]) }}" class="card-img-top" style="height: 150px; object-fit: cover;" alt="{{ recipe[1] }}">
+                                        {% endif %}
+                                        <div class="card-body p-3">
+                                            <h6 class="card-title">{{ recipe[1] }}</h6>
+                                            <p class="card-text small text-muted">{{ recipe[2][:80] }}{% if recipe[2]|length > 80 %}...{% endif %}</p>
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <span class="badge bg-secondary small">{{ recipe[5].replace('_', ' ').title() }}</span>
+                                                <a href="{{ url_for('recipe_detail', recipe_id=recipe[0]) }}" class="btn btn-outline-primary btn-sm">Lihat</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="bi bi-journal-x text-muted" style="font-size: 3rem;"></i>
+                            <h5 class="text-muted mt-2">Belum ada resep</h5>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

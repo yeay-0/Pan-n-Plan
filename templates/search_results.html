@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+{% block content %}
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container">
+        <a class="navbar-brand" href="{{ url_for('index') }}">
+            <i class="bi bi-book"></i> Plan N Plan
+        </a>
+        
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('index') }}">Beranda</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('search') }}">Cari Resep</a>
+                </li>
+            </ul>
+            
+            <ul class="navbar-nav">
+                {% if session.user_id %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-person-circle"></i> {{ session.username }}
+                        </a>
+                        <ul class="dropdown-menu">
+                            {% if session.user_type == 'creator' %}
+                                <li><a class="dropdown-item" href="{{ url_for('creator_dashboard') }}">Dashboard</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('create_recipe') }}">Buat Resep</a></li>
+                            {% else %}
+                                <li><a class="dropdown-item" href="{{ url_for('user_dashboard') }}">Dashboard</a></li>
+                            {% endif %}
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{{ url_for('logout') }}">Logout</a></li>
+                        </ul>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('login') }}">Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('register') }}">Daftar</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
+<!-- SEARCH_RESULTS.HTML -->
+<div class="container my-5">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0">Filter Pencarian</h6>
+                </div>
+                <div class="card-body">
+                    <form action="{{ url_for('search') }}" method="GET">
+                        <div class="mb-3">
+                            <label for="search_query" class="form-label">Cari Resep</label>
+                            <input type="text" class="form-control" id="search_query" name="q" 
+                                   value="{{ query }}" placeholder="Nama resep...">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="search_category" class="form-label">Kategori</label>
+                            <select class="form-select" id="search_category" name="category">
+                                <option value="">Semua Kategori</option>
+                                <option value="makanan_utama" {% if category == 'makanan_utama' %}selected{% endif %}>Makanan Utama</option>
+                                <option value="makanan_pembuka" {% if category == 'makanan_pembuka' %}selected{% endif %}>Makanan Pembuka</option>
+                                <option value="makanan_penutup" {% if category == 'makanan_penutup' %}selected{% endif %}>Makanan Penutup</option>
+                                <option value="minuman" {% if category == 'minuman' %}selected{% endif %}>Minuman</option>
+                                <option value="cemilan" {% if category == 'cemilan' %}selected{% endif %}>Cemilan</option>
+                                <option value="lainnya" {% if category == 'lainnya' %}selected{% endif %}>Lainnya</option>
+                            </select>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-search"></i> Cari
+                            </button>
+                            <a href="{{ url_for('search') }}" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-clockwise"></i> Reset
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-9">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>Hasil Pencarian</h2>
+                <span class="text-muted">{{ recipes|length }} resep ditemukan</span>
+            </div>
+            
+            {% if query or category %}
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i>
+                    Menampilkan hasil untuk:
+                    {% if query %}<strong>"{{ query }}"</strong>{% endif %}
+                    {% if query and category %} dalam kategori {% endif %}
+                    {% if category %}<strong>{{ category.replace('_', ' ').title() }}</strong>{% endif %}
+                </div>
+            {% endif %}
+            
+            {% if recipes %}
+                <div class="row">
+                    {% for recipe in recipes %}
+                        <div class="col-md-6 col-lg-4 mb-4">
+                            <div class="card recipe-card shadow-sm h-100">
+                                {% if recipe[8] %}
+                                    <img src="{{ url_for('static', filename='uploads/' + recipe[8]) }}" 
+                                         class="card-img-top" style="height: 180px; object-fit: cover;" alt="{{ recipe[1] }}">
+                                {% else %}
+                                    <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 180px;">
+                                        <i class="bi bi-image text-muted" style="font-size: 2rem;"></i>
+                                    </div>
+                                {% endif %}
+                                
+                                <div class="card-body d-flex flex-column">
+                                    <h6 class="card-title">{{ recipe[1] }}</h6>
+                                    <p class="card-text text-muted small flex-grow-1">
+                                        {{ recipe[2][:100] }}{% if recipe[2]|length > 100 %}...{% endif %}
+                                    </p>
+                                    
+                                    <div class="mb-2">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <span class="badge bg-primary small">{{ recipe[5].replace('_', ' ').title() }}</span>
+                                            {% if recipe[6] %}
+                                                <small class="text-muted">
+                                                    <i class="bi bi-clock"></i> {{ recipe[6] }} min
+                                                </small>
+                                            {% endif %}
+                                        </div>
+                                        
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <small class="text-muted">
+                                                <i class="bi bi-person"></i> {{ recipe[11] }}
+                                            </small>
+                                            <a href="{{ url_for('recipe_detail', recipe_id=recipe[0]) }}" class="btn btn-outline-primary btn-sm">
+                                                Lihat Resep
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="bi bi-search text-muted" style="font-size: 4rem;"></i>
+                    <h4 class="text-muted mt-3">Tidak ada resep ditemukan</h4>
+                    <p class="text-muted">Coba gunakan kata kunci yang berbeda atau ubah filter pencarian</p>
+                    <a href="{{ url_for('search') }}" class="btn btn-primary">Cari Lagi</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

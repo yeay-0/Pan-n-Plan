@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Resep Favorit Saya</h2>
+    
+    {% if recipes %}
+        <div class="row">
+            {% for recipe in recipes %}
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        {% if recipe[8] %}
+                            <img src="{{ url_for('static', filename='uploads/' + recipe[8]) }}" class="card-img-top" alt="{{ recipe[1] }}">
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ recipe[1] }}</h5>
+                            <p class="card-text">{{ recipe[2][:100] }}...</p>
+                            <a href="{{ url_for('recipe_detail', recipe_id=recipe[0]) }}" class="btn btn-primary">Lihat</a>
+                            <form action="{{ url_for('unfavorite', recipe_id=recipe[0]) }}" method="POST" class="d-inline">
+                                <button class="btn btn-outline-danger">Hapus dari Favorit</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="text-muted">Belum ada resep favorit.</p>
+    {% endif %}
+</div>
+{% endblock %}

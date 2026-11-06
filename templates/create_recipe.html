@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block content %}
+<!-- CREATE_RECIPE.HTML -->
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h4><i class="bi bi-plus-circle"></i> Buat Resep Baru</h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="title" class="form-label">Judul Resep *</label>
+                                    <input type="text" class="form-control" id="title" name="title" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="category" class="form-label">Kategori *</label>
+                                    <select class="form-select" id="category" name="category" required>
+                                        <option value="">Pilih kategori</option>
+                                        <option value="makanan_utama">Makanan Utama</option>
+                                        <option value="makanan_pembuka">Makanan Pembuka</option>
+                                        <option value="makanan_penutup">Makanan Penutup</option>
+                                        <option value="minuman">Minuman</option>
+                                        <option value="cemilan">Cemilan</option>
+                                        <option value="lainnya">Lainnya</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Deskripsi</label>
+                            <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="cooking_time" class="form-label">Waktu Memasak (menit)</label>
+                                    <input type="number" class="form-control" id="cooking_time" name="cooking_time" min="1">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="servings" class="form-label">Porsi</label>
+                                    <input type="number" class="form-control" id="servings" name="servings" min="1">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="ingredients" class="form-label">Bahan-bahan *</label>
+                            <textarea class="form-control" id="ingredients" name="ingredients" rows="6" required 
+                                      placeholder="Masukkan setiap bahan dalam baris terpisah&#10;Contoh:&#10;2 buah telur&#10;200ml susu&#10;1 sdm gula"></textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="instructions" class="form-label">Cara Membuat *</label>
+                            <textarea class="form-control" id="instructions" name="instructions" rows="8" required 
+                                      placeholder="Masukkan setiap langkah dalam baris terpisah&#10;Contoh:&#10;Kocok telur hingga berbusa&#10;Tambahkan susu dan gula&#10;Aduk hingga rata"></textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="image" class="form-label">Foto Resep</label>
+                            <input type="file" class="form-control" id="image" name="image" accept="image/*">
+                            <div class="form-text">Format yang didukung: JPG, PNG, GIF (Max: 16MB)</div>
+                        </div>
+                        
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{{ url_for('creator_dashboard') }}" class="btn btn-secondary">Batal</a>
+                            <button type="submit" class="btn btn-success">
+                                <i class="bi bi-check-circle"></i> Simpan Resep
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

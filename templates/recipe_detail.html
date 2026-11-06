@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% block content %}
+<!-- RECIPE_DETAIL.HTML -->
+<div class="container my-5">
+    {% if recipe %}
+        <div class="row">
+            <div class="col-md-8">
+                {% if recipe[8] %}
+                    <img src="{{ url_for('static', filename='uploads/' + recipe[8]) }}" class="img-fluid rounded mb-4" alt="{{ recipe[1] }}">
+                {% endif %}
+                
+                <h1 class="mb-3">{{ recipe[1] }}</h1>
+                
+                <div class="d-flex flex-wrap gap-3 mb-4">
+                    <span class="badge bg-primary fs-6">{{ recipe[5].replace('_', ' ').title() }}</span>
+                    {% if recipe[6] %}
+                        <span class="text-muted">
+                            <i class="bi bi-clock"></i> {{ recipe[6] }} menit
+                        </span>
+                    {% endif %}
+                    {% if recipe[7] %}
+                        <span class="text-muted">
+                            <i class="bi bi-people"></i> {{ recipe[7] }} porsi
+                        </span>
+                    {% endif %}
+                    <span class="text-muted">
+                        <i class="bi bi-person"></i> {{ recipe[11] }}
+                    </span>
+                </div>
+                
+                {% if recipe[2] %}
+                    <div class="mb-4">
+                        <h5>Deskripsi</h5>
+                        <p class="text-muted">{{ recipe[2] }}</p>
+                    </div>
+                {% endif %}
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5>Bahan-bahan</h5>
+                        <ul class="list-group list-group-flush mb-4">
+                            {% for ingredient in recipe[3].split('\n') %}
+                                {% if ingredient.strip() %}
+                                    <li class="list-group-item px-0">
+                                        <i class="bi bi-check-circle text-success me-2"></i>
+                                        {{ ingredient.strip() }}
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <h5>Cara Membuat</h5>
+                        <ol class="list-group list-group-numbered">
+                            {% for instruction in recipe[4].split('\n') %}
+                                {% if instruction.strip() %}
+                                    <li class="list-group-item border-0 px-0">
+                                        {{ instruction.strip() }}
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                        </ol>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card sticky-top" style="top: 20px;">
+                    <div class="card-header">
+                        <h6 class="mb-0">Informasi Resep</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <strong>Kategori:</strong><br>
+                            <span class="badge bg-secondary">{{ recipe[5].replace('_', ' ').title() }}</span>
+                        </div>
+                        
+                        {% if recipe[6] %}
+                            <div class="mb-3">
+                                <strong>Waktu Memasak:</strong><br>
+                                <i class="bi bi-clock text-muted"></i> {{ recipe[6] }} menit
+                            </div>
+                        {% endif %}
+                        
+                        {% if recipe[7] %}
+                            <div class="mb-3">
+                                <strong>Porsi:</strong><br>
+                                <i class="bi bi-people text-muted"></i> {{ recipe[7] }} orang
+                            </div>
+                        {% endif %}
+                        
+                        <div class="mb-3">
+                            <strong>Dibuat oleh:</strong><br>
+                            <i class="bi bi-person text-muted"></i> {{ recipe[11] }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <strong>Tanggal:</strong><br>
+                            <i class="bi bi-calendar text-muted"></i> {{ recipe[10][:10] }}
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button class="btn btn-outline-primary" onclick="window.print()">
+                                <i class="bi bi-printer"></i> Cetak Resep
+                            </button>
+                            <form action="{{ url_for('favorite', recipe_id=recipe[0]) }}" method="POST">
+                                <button class="btn btn-primary">Tambah Favorit <3</button>
+                            </form>
+                             <form action="{{ url_for('unfavorite', recipe_id=recipe[0]) }}" method="POST">
+                                <button class="bi bi-primary">Hapus dari Favorit </3</button>
+                            </form>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
